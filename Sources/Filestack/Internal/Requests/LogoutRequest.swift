@@ -31,7 +31,7 @@ final class LogoutRequest {
         let task = URLSession.filestackDefault.dataTask(with: request) { (data, response, error) in
             let response = LogoutResponse(error: error)
 
-            completionBlock(response)
+            DispatchQueue.main.async { completionBlock(response) }
         }
 
         task.resume()
