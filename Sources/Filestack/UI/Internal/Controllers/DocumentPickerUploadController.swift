@@ -17,14 +17,22 @@ class DocumentPickerUploadController: URLPickerUploadController {
          viewController: UIViewController,
          config: Config,
          completionBlock: (([URL]) -> Void)? = nil) {
-        let allowedContentTypes = config.documentPickerAllowedUTIs.compactMap { UTIString in
-            if let contentType = UTType(UTIString) {
-                return contentType
-            } else {
-                return nil
-            }
+        if #available(iOS 14.0, *) {
+            let allowedContentTypes: [UTType] = config.documentPickerAllowedUTIs
+                .compactMap { UTType($0) }
+            self.picker = UIDocumentPickerViewController(
+                forOpeningContentTypes: allowedContentTypes.isEmpty ? [UTType.item] : allowedContentTypes,
+                asCopy: true
+            )
+        } else {
+            let docTypes: [String] = config.documentPickerAllowedUTIs.isEmpty
+                ? ["public.item"]
+                : config.documentPickerAllowedUTIs
+            self.picker = UIDocumentPickerViewController(
+                documentTypes: docTypes,
+                in: .import
+            )
         }
-        self.picker = UIDocumentPickerViewController(forOpeningContentTypes: allowedContentTypes.isEmpty ? [.item] : allowedContentTypes, asCopy: true)
         super.init(uploader: uploader,
                    viewController: viewController,
                    presentedViewController: picker,

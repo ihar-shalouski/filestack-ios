@@ -345,7 +345,9 @@ private extension Client {
             }
 
             // Set the presentation context provider
-            session.presentationContextProvider = self
+            if #available(iOS 13.0, *) {
+                session.presentationContextProvider = self
+            }
             
             // Keep a strong reference to the auth session.
             self.safariAuthSession = session
